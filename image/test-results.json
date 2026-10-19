@@ -1,8 +1,8 @@
 {
  "image": "D:\\OneDrive\\Workspace\\LinuxSimu\\.build\\image",
- "date": "2026-10-19T17:26:02.082Z",
- "cold_boot_ms": 15503,
- "total_ms": 66479,
+ "date": "2026-10-19T17:27:57.217Z",
+ "cold_boot_ms": 19814,
+ "total_ms": 85303,
  "results": [
   {
    "id": "0",
@@ -20,9 +20,9 @@
    "id": "2",
    "name": "Hello World assembly (as, ld, ./example)",
    "pass": true,
-   "detail": "as 223 ms, ld 286 ms, ./example -> \"Hello, World\" (mã thoát 0)",
-   "as_ms": 223,
-   "ld_ms": 286
+   "detail": "as 338 ms, ld 524 ms, ./example -> \"Hello, World\" (mã thoát 0)",
+   "as_ms": 338,
+   "ld_ms": 524
   },
   {
    "id": "3",
@@ -33,9 +33,9 @@
   {
    "id": "4",
    "name": "Lab1-template.cpp với g++",
-   "pass": false,
-   "detail": "g++ 18.0 s; ",
-   "gpp_ms": 17958
+   "pass": true,
+   "detail": "g++ 26.9 s; Your score: 9/11",
+   "gpp_ms": 26899
   },
   {
    "id": "5",
@@ -47,16 +47,16 @@
    "id": "6",
    "name": "gdb ./example và objdump -d example",
    "pass": true,
-   "detail": "gdb 10.3 s; objdump: mov    $0xd,%edx",
-   "gdb_ms": 10270
+   "detail": "gdb 13.4 s; objdump: mov    $0xd,%edx",
+   "gdb_ms": 13372
   },
   {
    "id": "8b",
    "name": "Thời gian biên dịch C đơn giản (gcc)",
    "pass": true,
-   "detail": "gcc bits.c: lần 1 4.0 s, lần 2 3.9 s",
-   "gcc_first_ms": 3980,
-   "gcc_ms": 3928
+   "detail": "gcc bits.c: lần 1 4.3 s, lần 2 4.5 s",
+   "gcc_first_ms": 4332,
+   "gcc_ms": 4473
   },
   {
    "id": "T1",
@@ -86,16 +86,16 @@
    "id": "T5",
    "name": "apt khi không có mạng báo lỗi rõ ràng",
    "pass": true,
-   "detail": "LTHT: Máy ảo CHƯA có mạng nên apt không tải được gói. |       Bật mạng trong menu Hệ thống > Mạng của giao diện web, rồi chạy: sudo ltht-net"
+   "detail": "\u001b]0;student@ltht: ~/LTHT/Lab1\u0007student@ltht:~/LTHT/Lab1$ sudo apt-get update 2>&1 | head -n 8; echo \"__E29__$?__\" | LTHT: Máy ảo CHƯA có mạng nên apt không tải được gói."
   },
   {
    "id": "S",
    "name": "Kích thước và thời gian khôi phục ảnh chụp",
    "pass": true,
-   "detail": "state 48 MB -> gzip 12.5 MB (lưu 112 ms + nén 722 ms); giải nén + khôi phục + lệnh đầu tiên 196 ms (Node)",
-   "state_mb": 47.502356,
-   "gzip_mb": 12.47591,
-   "restore_ms": 196
+   "detail": "state 47 MB -> gzip 12.4 MB (lưu 127 ms + nén 822 ms); giải nén + khôi phục + lệnh đầu tiên 213 ms (Node)",
+   "state_mb": 47.324416,
+   "gzip_mb": 12.376156,
+   "restore_ms": 213
   }
  ]
 }
