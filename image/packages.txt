@@ -1,0 +1,38 @@
+# Các gói cài thêm sau debootstrap (variant=minbase), cài bằng apt-get
+# --no-install-recommends trong chính máy ảo (giai đoạn 2).
+# Dòng bắt đầu bằng # là chú thích.
+
+# Bộ công cụ biên dịch và gỡ lỗi
+binutils
+gcc
+g++
+make
+build-essential
+gdb
+strace
+ltrace
+nasm
+
+# Trình soạn thảo và tiện ích dòng lệnh
+vim
+nano
+less
+man-db
+manpages
+manpages-dev
+bash-completion
+file
+tree
+xxd
+procps
+psmisc
+zip
+unzip
+
+# Hệ thống
+sudo
+kmod
+sysvinit-core
+udhcpc
+iproute2
+ca-certificates

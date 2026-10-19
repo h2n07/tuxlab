@@ -1,0 +1,7 @@
+#!/bin/sh
+# Kiểm tra nhanh: có tuyến mặc định (default route) hay không.
+if ! ip route 2>/dev/null | grep -q '^default'; then
+    echo "LTHT: Máy ảo CHƯA có mạng nên apt không tải được gói." >&2
+    echo "      Bật mạng trong menu Hệ thống > Mạng của giao diện web, rồi chạy: sudo ltht-net" >&2
+fi
+exit 0

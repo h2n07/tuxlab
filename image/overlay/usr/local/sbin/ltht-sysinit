@@ -1,0 +1,22 @@
+#!/bin/sh
+# Khởi tạo tối giản cho máy ảo LTHT (chạy bởi init ở bước sysinit).
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+mountpoint -q /proc || mount -t proc proc /proc
+mountpoint -q /sys  || mount -t sysfs sysfs /sys
+mkdir -p /dev/pts /dev/shm
+mountpoint -q /dev/pts || mount -t devpts -o gid=5,mode=620,ptmxmode=666 devpts /dev/pts
+mountpoint -q /dev/shm || mount -t tmpfs -o mode=1777 tmpfs /dev/shm
+mount -t tmpfs -o mode=755,size=32M tmpfs /run
+mkdir -p /run/lock /run/sudo /run/user && chmod 1777 /run/lock
+# /tmp trong RAM: gcc ghi tệp tạm ở đây nhanh hơn nhiều so với 9p.
+mount -t tmpfs -o mode=1777,size=192M tmpfs /tmp
+ln -sf /proc/self/fd /dev/fd; ln -sf /proc/self/fd/0 /dev/stdin
+ln -sf /proc/self/fd/1 /dev/stdout; ln -sf /proc/self/fd/2 /dev/stderr
+: > /run/utmp; chgrp utmp /run/utmp; chmod 664 /run/utmp
+hostname -F /etc/hostname
+# ttyS0 là kênh điều khiển với giao diện web: cho nhóm dialout (student) ghi tín hiệu sẵn sàng.
+chgrp dialout /dev/ttyS0 && chmod 620 /dev/ttyS0
+ip link set lo up 2>/dev/null
+modprobe -q virtio_net 2>/dev/null
+dmesg -n 1
+exit 0

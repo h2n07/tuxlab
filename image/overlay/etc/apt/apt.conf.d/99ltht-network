@@ -1,0 +1,4 @@
+// LTHT: cảnh báo rõ ràng khi máy ảo chưa có mạng (apt vẫn in lỗi thật của nó).
+APT::Update::Pre-Invoke { "/usr/local/lib/ltht/apt-net-check || true"; };
+Acquire::http::Pipeline-Depth "0";
+Acquire::Retries "0";

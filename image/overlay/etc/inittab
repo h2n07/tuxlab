@@ -1,0 +1,12 @@
+# /etc/inittab của máy ảo LTHT (sysvinit-core của Debian).
+# Thay vì /etc/init.d/rcS, bước sysinit dùng một script ngắn để khởi động nhanh.
+id:2:initdefault:
+si::sysinit:/usr/local/sbin/ltht-sysinit
+
+# Terminal chính: virtio-console (hvc0) nối với xterm.js trên web, tự đăng nhập "student".
+1:2345:respawn:/sbin/agetty --autologin student --noclear --noissue -8 hvc0 xterm-256color
+
+# Tác tử điều khiển (đồng bộ giờ, sync) trên ttyS0 - xem /usr/local/sbin/ltht-agent.
+ag:2345:respawn:/usr/local/sbin/ltht-agent
+
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -r now

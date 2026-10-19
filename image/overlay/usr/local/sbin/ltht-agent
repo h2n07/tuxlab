@@ -1,0 +1,17 @@
+#!/bin/sh
+# Kênh điều khiển phụ giữa giao diện web và máy ảo, qua cổng nối tiếp ttyS0
+# (không hiện trong terminal của sinh viên). Chỉ nhận vài lệnh cố định:
+#   time <epoch>   đặt lại đồng hồ sau khi khôi phục ảnh chụp
+#   sync           ghi dữ liệu đang đệm
+#   drop           giải phóng page cache (trước khi chụp ảnh máy)
+#   ping <id>      trả lời "LTHT_PONG <id>"
+exec < /dev/ttyS0
+stty -echo -icrnl 2>/dev/null
+while read -r cmd arg; do
+    case "$cmd" in
+        time) date -s "@$arg" >/dev/null 2>&1 ;;
+        sync) sync ;;
+        drop) sync; echo 3 > /proc/sys/vm/drop_caches ;;
+        ping) printf 'LTHT_PONG %s\n' "$arg" > /dev/ttyS0 ;;
+    esac
+done

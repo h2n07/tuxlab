@@ -1,0 +1,276 @@
+/* ===== Skin: chỉ là biến màu ===== */
+:root, :root[data-skin="ubuntu"] {
+    --accent: #e95420;
+    --accent-2: #77216f;
+    --accent-text: #fff;
+    --wallpaper: radial-gradient(circle at 75% 30%, #e95420 0%, #a4304f 28%, #5e2750 55%, #2c001e 100%);
+    --taskbar: rgba(22, 6, 18, .92);
+    --taskbar-text: #f1f1f1;
+    --title-bg: #2c2c2c;
+    --title-bg-inactive: #3a3a3a;
+    --title-text: #f2f2f2;
+    --win-bg: #fafafa;
+    --win-text: #1d1d1d;
+    --panel: #f0f0f0;
+    --panel-border: #d8d8d8;
+    --hover: rgba(233, 84, 32, .12);
+    --sel: rgba(233, 84, 32, .22);
+    --muted: #6b6b6b;
+    --font-ui: "Ubuntu", "Noto Sans", "Segoe UI", system-ui, sans-serif;
+    --radius: 10px;
+    --folder: #f0a33a;
+    --folder-back: #c97a14;
+}
+:root[data-skin="kali"] {
+    --accent: #367bf0;
+    --accent-2: #1f4c9c;
+    --wallpaper: radial-gradient(ellipse at 30% 110%, #2a4f8f 0%, #16243f 40%, #0b0f19 80%),
+                 linear-gradient(160deg, #0b0f19, #12182a);
+    --taskbar: rgba(13, 17, 27, .94);
+    --title-bg: #1d2333;
+    --title-bg-inactive: #2a3142;
+    --title-text: #e8ecf5;
+    --win-bg: #232a3a;
+    --win-text: #e3e8f2;
+    --panel: #1b2130;
+    --panel-border: #333c52;
+    --hover: rgba(54, 123, 240, .16);
+    --sel: rgba(54, 123, 240, .32);
+    --muted: #98a3b9;
+    --font-ui: "Cantarell", "Noto Sans", "Segoe UI", system-ui, sans-serif;
+    --radius: 6px;
+    --folder: #4d8ff5;
+    --folder-back: #2c62bd;
+}
+:root[data-skin="fedora"] {
+    --accent: #3c6eb4;
+    --accent-2: #294172;
+    --wallpaper: linear-gradient(135deg, #0b1f3a 0%, #1f4c8a 45%, #51a2da 100%);
+    --taskbar: rgba(24, 26, 30, .9);
+    --title-bg: #303030;
+    --title-bg-inactive: #444;
+    --title-text: #f4f4f4;
+    --win-bg: #fbfbfb;
+    --win-text: #222;
+    --panel: #f2f3f5;
+    --panel-border: #d6d9de;
+    --hover: rgba(60, 110, 180, .12);
+    --sel: rgba(60, 110, 180, .24);
+    --muted: #686f7a;
+    --font-ui: "Red Hat Text", "Cantarell", "Noto Sans", "Segoe UI", system-ui, sans-serif;
+    --radius: 12px;
+    --folder: #6a9fd8;
+    --folder-back: #3c6eb4;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; overflow: hidden; }
+body { font: 14px/1.4 var(--font-ui); color: var(--win-text); background: #111; }
+button { font: inherit; color: inherit; }
+code, .mono { font-family: "DejaVu Sans Mono", "Ubuntu Mono", Consolas, monospace; font-size: .92em; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.grow { flex: 1; }
+.scroll { overflow: auto; }
+a { color: var(--accent); }
+
+/* ===== Desktop ===== */
+.desktop { position: fixed; inset: 0; user-select: none; }
+.wallpaper { position: absolute; inset: 0; background: var(--wallpaper); }
+.desktop-icons { position: absolute; top: 12px; left: 10px; display: grid; grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fill, 96px); height: calc(100% - 70px); gap: 4px; }
+.dicon { width: 92px; height: 92px; background: none; border: 1px solid transparent; border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 5px; color: #fff; cursor: default;
+    text-shadow: 0 1px 3px #000; font-size: 12.5px; padding: 6px 2px; }
+.dicon span { max-width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dicon:hover { background: rgba(255,255,255,.12); }
+.dicon:focus { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.35); outline: none; }
+
+/* ===== Cửa sổ ===== */
+.window { position: absolute; display: flex; flex-direction: column; background: var(--win-bg);
+    border-radius: var(--radius); box-shadow: 0 10px 34px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.35);
+    overflow: hidden; min-width: 0; }
+.window.active { box-shadow: 0 14px 44px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4); }
+.window.maximized { border-radius: 0; }
+.window.minimized { display: none; }
+.window.dragging { transition: none; }
+.window.dragging .window-body { pointer-events: none; }
+.titlebar { height: 36px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 12px;
+    background: var(--title-bg-inactive); color: var(--title-text); cursor: default; }
+.window.active .titlebar { background: var(--title-bg); }
+.title-icon { display: flex; }
+.title-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 13.5px; }
+.title-buttons { display: flex; gap: 6px; }
+.title-buttons button { width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(255,255,255,.12);
+    color: var(--title-text); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.title-buttons button:hover { background: rgba(255,255,255,.25); }
+.title-buttons button.close { background: var(--accent); color: #fff; }
+.window-body { flex: 1; min-height: 0; display: flex; flex-direction: column; user-select: text; }
+.rz { position: absolute; z-index: 5; }
+.rz-n, .rz-s { left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.rz-n { top: -2px; } .rz-s { bottom: -2px; }
+.rz-e, .rz-w { top: 8px; bottom: 8px; width: 6px; cursor: ew-resize; }
+.rz-e { right: -2px; } .rz-w { left: -2px; }
+.rz-ne, .rz-nw, .rz-se, .rz-sw { width: 12px; height: 12px; }
+.rz-ne { top: -2px; right: -2px; cursor: nesw-resize; } .rz-sw { bottom: -2px; left: -2px; cursor: nesw-resize; }
+.rz-nw { top: -2px; left: -2px; cursor: nwse-resize; } .rz-se { bottom: -2px; right: -2px; cursor: nwse-resize; }
+
+/* ===== Thanh công cụ / trạng thái chung ===== */
+.toolbar { flex: none; display: flex; align-items: center; gap: 4px; padding: 5px 8px; background: var(--panel);
+    border-bottom: 1px solid var(--panel-border); min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.toolbar.small { padding: 3px 6px; font-size: 12.5px; }
+.toolbar button, .row-buttons button, .app-settings button:not(.skin-card) {
+    border: 1px solid var(--panel-border); background: var(--win-bg); border-radius: 6px; padding: 3px 10px;
+    cursor: pointer; white-space: nowrap; }
+.toolbar button:hover:not(:disabled) { background: var(--hover); }
+button:disabled { opacity: .5; cursor: default; }
+button.primary, .toolbar button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button.primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--accent); }
+button.danger { background: #c62828; border-color: #c62828; color: #fff; }
+.toolbar .sep { width: 1px; height: 18px; background: var(--panel-border); margin: 0 4px; flex: none; }
+.statusbar { flex: none; display: flex; gap: 14px; align-items: center; padding: 3px 10px; font-size: 12px;
+    background: var(--panel); border-top: 1px solid var(--panel-border); white-space: nowrap; overflow: hidden; }
+.statusbar > * { overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== Terminal ===== */
+.app-terminal { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; background: #000; }
+.app-terminal .toolbar { background: #2b2b2b; border-color: #111; color: #ddd; }
+.app-terminal .toolbar button { background: #3a3a3a; border-color: #4a4a4a; color: #eee; }
+.app-terminal .toolbar .muted { color: #aaa; }
+.term-host { flex: 1; min-height: 0; padding: 4px 0 0 6px; background: var(--term-bg, #300a24); }
+:root[data-skin="kali"] .term-host { --term-bg: #1a1b26; }
+:root[data-skin="fedora"] .term-host { --term-bg: #1e1f22; }
+.term-host .xterm { height: 100%; }
+.term-overlay { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); background: rgba(20,20,20,.88);
+    color: #eee; padding: 10px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px;
+    font-size: 13px; box-shadow: 0 4px 18px rgba(0,0,0,.5); max-width: 90%; pointer-events: none; }
+.term-overlay progress { width: 120px; }
+.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #777; border-top-color: var(--accent);
+    animation: spin 1s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Tệp ===== */
+.app-files { flex: 1; display: flex; flex-direction: column; min-height: 0; outline: none; }
+.crumbs { display: flex; align-items: center; min-width: 0; overflow-x: auto; background: var(--win-bg);
+    border: 1px solid var(--panel-border); border-radius: 6px; padding: 1px 3px; flex: 0 1 auto; scrollbar-width: none; }
+.toolbar .crumb { border: none; background: none; padding: 2px 6px; border-radius: 4px; }
+.toolbar .crumb:not(:first-child)::before { content: "›"; margin-right: 6px; color: var(--muted); }
+.toolbar .crumb.edit::before { content: ""; margin: 0; }
+.pathbar { flex: 1; min-width: 160px; padding: 3px 8px; border: 1px solid var(--accent); border-radius: 6px;
+    font: 13px "DejaVu Sans Mono", Consolas, monospace; background: var(--win-bg); color: var(--win-text); }
+.files-main { flex: 1; display: flex; min-height: 0; }
+.sidebar { width: 178px; flex: none; background: var(--panel); border-right: 1px solid var(--panel-border);
+    padding: 6px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.sidebar button { display: flex; gap: 8px; align-items: center; border: none; background: none; text-align: left;
+    padding: 5px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; overflow: hidden; }
+.sidebar button:hover { background: var(--hover); }
+.sidebar button.active { background: var(--sel); font-weight: 600; }
+.sidebar-note { margin-top: auto; font-size: 11.5px; color: var(--muted); padding: 8px 4px; line-height: 1.35; }
+.filelist { flex: 1; overflow: auto; min-width: 0; }
+.filelist.drop { outline: 2px dashed var(--accent); outline-offset: -4px; }
+.filelist .row { display: grid; grid-template-columns: minmax(160px, 1fr) 90px 140px 100px; gap: 8px;
+    align-items: center; padding: 2px 10px; border-bottom: 1px solid transparent; cursor: default; }
+.filelist .row:not(.head):hover { background: var(--hover); }
+.filelist .row.sel { background: var(--sel); }
+.filelist .row.drop { outline: 2px solid var(--accent); outline-offset: -2px; }
+.filelist .row.head { position: sticky; top: 0; background: var(--win-bg); border-bottom: 1px solid var(--panel-border);
+    font-size: 12px; color: var(--muted); z-index: 1; }
+.filelist .row.head span { cursor: pointer; }
+.c-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.c-name .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-size, .c-time, .c-mode { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+.c-size { text-align: right; }
+.entry-icon { position: relative; display: flex; flex: none; }
+.link-badge { position: absolute; right: -3px; bottom: -3px; display: flex; }
+.rename { flex: 1; min-width: 0; padding: 1px 4px; font: inherit; border: 1px solid var(--accent); border-radius: 4px;
+    background: var(--win-bg); color: var(--win-text); }
+.empty { padding: 30px; text-align: center; color: var(--muted); }
+.empty.error { color: #c62828; }
+@media (max-width: 760px) {
+    .sidebar { display: none; }
+    .filelist .row { grid-template-columns: minmax(120px, 1fr) 70px; }
+    .c-time, .c-mode { display: none; }
+}
+
+/* ===== Soạn thảo ===== */
+.app-editor { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.editor-host { flex: 1; min-height: 0; overflow: hidden; background: #282c34; }
+.editor-host .cm-editor { height: 100%; }
+.editor-host .cm-editor.cm-focused { outline: none; }
+.cmd-preview { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 46%; background: rgba(127,127,127,.12); padding: 2px 6px; border-radius: 4px; }
+
+/* ===== Cài đặt / Giới thiệu ===== */
+.app-settings, .app-about { flex: 1; padding: 6px 18px 18px; min-height: 0; }
+.app-settings section { padding: 10px 0 14px; border-bottom: 1px solid var(--panel-border); }
+.app-settings h3, .app-about h3 { margin: 12px 0 6px; font-size: 15px; }
+.app-about h2 { font-size: 18px; margin: 12px 0 8px; }
+.skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+.skin-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 12px;
+    border-radius: 10px; border: 2px solid var(--panel-border); background: var(--panel); cursor: pointer; text-align: left; }
+.skin-card.active { border-color: var(--accent); }
+.skin-card.skin-ubuntu { background: linear-gradient(135deg, #5e2750, #e95420); color: #fff; }
+.skin-card.skin-kali { background: linear-gradient(135deg, #0b0f19, #2a4f8f); color: #fff; }
+.skin-card.skin-fedora { background: linear-gradient(135deg, #0b1f3a, #51a2da); color: #fff; }
+.skin-card .muted { color: rgba(255,255,255,.8); font-size: 12px; }
+.field { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.field.col { flex-direction: column; align-items: stretch; }
+.field input[type=text], .field select { padding: 5px 8px; border: 1px solid var(--panel-border); border-radius: 6px;
+    background: var(--win-bg); color: var(--win-text); font: inherit; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.danger-zone h3 { color: #c62828; }
+.app-about button.cmd { display: block; width: 100%; text-align: left; margin: 4px 0; padding: 6px 10px;
+    border: 1px solid var(--panel-border); border-radius: 6px; background: var(--panel); cursor: pointer; }
+.app-about button.cmd:hover:not(:disabled) { border-color: var(--accent); }
+.kv td { padding: 2px 10px 2px 0; vertical-align: top; }
+.kv td:first-child { color: var(--muted); white-space: nowrap; }
+.app-log { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.log { flex: 1; margin: 0; padding: 8px 10px; background: #111; color: #cfd8dc; font: 12px/1.35 "DejaVu Sans Mono", Consolas, monospace;
+    white-space: pre-wrap; word-break: break-all; }
+
+/* ===== Thanh tác vụ ===== */
+.taskbar { position: absolute; left: 0; right: 0; bottom: 0; height: 48px; display: flex; align-items: center; gap: 4px;
+    padding: 0 8px; background: var(--taskbar); color: var(--taskbar-text); backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255,255,255,.08); z-index: 100000; }
+.taskbar button { border: none; background: none; color: inherit; cursor: pointer; border-radius: 8px; }
+.taskbar .start, .taskbar .launcher { width: 40px; height: 40px; display: grid; place-items: center; flex: none; }
+.taskbar .start:hover, .taskbar .launcher:hover, .taskbar .start.open { background: rgba(255,255,255,.12); }
+.tasks { flex: 1; display: flex; gap: 4px; min-width: 0; overflow: hidden; padding-left: 6px;
+    border-left: 1px solid rgba(255,255,255,.12); margin-left: 4px; }
+.task { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; max-width: 220px; min-width: 40px;
+    background: rgba(255,255,255,.06) !important; border-bottom: 2px solid transparent !important; border-radius: 6px 6px 3px 3px !important; }
+.task span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; }
+.task.active { background: rgba(255,255,255,.16) !important; border-bottom-color: var(--accent) !important; }
+.task.min { opacity: .65; }
+.tray { display: flex; align-items: center; gap: 12px; flex: none; font-size: 12px; }
+.vmstate { display: flex; align-items: center; gap: 6px; cursor: pointer; max-width: 360px; overflow: hidden; white-space: nowrap; }
+.vmstate i { width: 9px; height: 9px; border-radius: 50%; background: #9e9e9e; flex: none; }
+.vmstate.ok i { background: #4caf50; }
+.vmstate.busy i { background: #ffb300; animation: pulse 1.2s infinite; }
+.vmstate.err i { background: #f44336; }
+.vmstate progress { width: 70px; }
+@keyframes pulse { 50% { opacity: .35; } }
+.saved { opacity: .8; }
+.clock { text-align: right; line-height: 1.15; }
+@media (max-width: 760px) { .saved, .clock small { display: none; } .vmstate { max-width: 140px; } }
+
+/* ===== Menu ===== */
+.startmenu { position: absolute; left: 8px; bottom: 54px; width: 320px; background: var(--win-bg); color: var(--win-text);
+    border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.5); padding: 8px; z-index: 100001;
+    display: flex; flex-direction: column; gap: 2px; }
+.sm-head { display: flex; gap: 10px; align-items: center; padding: 8px 10px 12px; border-bottom: 1px solid var(--panel-border); margin-bottom: 6px; }
+.startmenu button { display: flex; gap: 10px; align-items: center; text-align: left; border: none; background: none;
+    padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+.startmenu button:hover { background: var(--hover); }
+.ctxmenu { position: fixed; z-index: 200000; min-width: 210px; max-width: 420px; background: var(--win-bg); color: var(--win-text);
+    border: 1px solid var(--panel-border); border-radius: 8px; padding: 4px; box-shadow: 0 8px 26px rgba(0,0,0,.35); }
+.ctxmenu button { display: flex; width: 100%; justify-content: space-between; gap: 18px; border: none; background: none;
+    padding: 6px 10px; border-radius: 5px; text-align: left; cursor: pointer; font-size: 13px; }
+.ctxmenu button:hover:not(:disabled) { background: var(--hover); }
+.ctxmenu button.danger { color: #c62828; }
+.ctxmenu .hint { color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.msep { height: 1px; background: var(--panel-border); margin: 4px 6px; }
+
+.boot-error { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); background: var(--win-bg);
+    padding: 20px 24px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.5); max-width: 520px; z-index: 99999; }
+.boot-error button { margin-top: 6px; padding: 5px 14px; border-radius: 6px; border: 1px solid var(--panel-border); cursor: pointer; }

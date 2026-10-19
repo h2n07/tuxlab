@@ -1,0 +1,8 @@
+#!/bin/sh
+# Xin địa chỉ IP qua DHCP trên card mạng virtio (khi giao diện web bật mạng).
+if ! ip link show eth0 >/dev/null 2>&1; then
+    echo "ltht-net: không thấy card mạng eth0. Hãy bật mạng trong giao diện web rồi khởi động lại máy ảo." >&2
+    exit 1
+fi
+ip link set eth0 up
+exec udhcpc -i eth0 -n -q -t 5

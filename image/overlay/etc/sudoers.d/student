@@ -1,0 +1,2 @@
+# LTHT: sinh viên dùng sudo không cần mật khẩu (vd. để cài gói bằng apt khi có mạng)
+student ALL=(ALL:ALL) NOPASSWD: ALL
