@@ -8,7 +8,7 @@ import "./styles.css";
 createRoot(document.getElementById("root")!).render(<Desktop />);
 
 // Mở terminal ngay để thấy quá trình khởi động / dấu nhắc lệnh.
-wm.open("terminal", {}, "Terminal - student@ltht");
+wm.open("terminal", {}, "Terminal - student@tuxlab");
 machine.start();
 
 if(import.meta.env.PROD && "serviceWorker" in navigator) {

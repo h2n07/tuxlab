@@ -15,11 +15,11 @@ export function AboutApp() {
     );
     return (
         <div className="app-about scroll">
-            <h2>Máy Linux cho môn Lập trình hệ thống</h2>
+            <h2>TuxLab — máy Linux thật trong trình duyệt</h2>
             <p>
                 Đây là <b>Debian GNU/Linux 12 (bookworm), kiến trúc i386 (32-bit)</b> thật, chạy trong trình duyệt nhờ
                 trình giả lập x86 <a href="https://github.com/copy/v86" target="_blank" rel="noreferrer">v86</a> (WebAssembly).
-                Mọi lệnh (<code>as</code>, <code>ld</code>, <code>gcc</code>, <code>g++</code>, <code>make</code>, <code>gdb</code>,
+                Dùng để học lập trình hệ thống, C/C++, assembly x86 32-bit, dòng lệnh Linux... mà không cần cài gì. Mọi lệnh (<code>as</code>, <code>ld</code>, <code>gcc</code>, <code>g++</code>, <code>make</code>, <code>gdb</code>,
                 <code>objdump</code>...) là chương trình Linux thật, nên kết quả, thông báo lỗi và mã thoát giống hệt máy Debian i386.
                 Skin Ubuntu/Kali/Fedora chỉ là màu sắc.
             </p>
@@ -63,6 +63,7 @@ export function AboutApp() {
                 <li>Debian GNU/Linux 12 - mỗi gói theo giấy phép riêng, xem <code>/usr/share/doc/*/copyright</code> trong máy ảo.
                     Kernel Linux (GPLv2). Mã nguồn tương ứng có tại <a href="https://sources.debian.org/" target="_blank" rel="noreferrer">sources.debian.org</a> và snapshot.debian.org.</li>
                 <li>xterm.js (MIT), CodeMirror 6 (MIT), React (MIT), fflate (MIT), Workbox (MIT).</li>
+                <li>TuxLab do <a href="https://github.com/h2n07" target="_blank" rel="noreferrer">h2n07</a> phát triển, mã nguồn tại <a href="https://github.com/h2n07/tuxlab" target="_blank" rel="noreferrer">github.com/h2n07/tuxlab</a> (MIT).</li>
                 <li>Không phải sản phẩm của Debian, Canonical, Offensive Security hay Red Hat. Các skin chỉ mô phỏng phối màu.</li>
             </ul>
         </div>

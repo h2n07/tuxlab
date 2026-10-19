@@ -1,9 +1,9 @@
 {
-  "name": "ltht-linux-lab",
+  "name": "tuxlab",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Máy Linux thật (Debian 12 i386 trên v86) trong trình duyệt cho môn Lập trình hệ thống",
+  "description": "TuxLab: a real Debian 12 i386 Linux desktop running in the browser with v86",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

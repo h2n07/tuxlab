@@ -59,7 +59,7 @@ export function openFiles(path = HOME) {
 }
 
 export function openTerminal() {
-    wm.open("terminal", {}, "Terminal - student@ltht");
+    wm.open("terminal", {}, "Terminal - student@tuxlab");
     focusTerminal();
 }
 

@@ -6,7 +6,7 @@ import { usePrefs, SKINS } from "./prefs";
 import { useMachineStatus, useNow } from "./hooks";
 import { machine } from "../vm/machine";
 import { HOME } from "../vm/guestfs";
-import { IconEditor, IconFolder, IconHelp, IconLog, IconSettings, IconTerminal, SkinLogo } from "./icons";
+import { IconEditor, IconFolder, IconHelp, IconLog, IconPenguin, IconSettings, IconTerminal, SkinLogo } from "./icons";
 import { TerminalApp } from "./apps/TerminalApp";
 import { FilesApp } from "./apps/FilesApp";
 import { EditorApp } from "./apps/EditorApp";
@@ -34,6 +34,35 @@ function AppBody({ win }: { win: Win }) {
     }
 }
 
+function GitHubMark({ size = 16 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+    );
+}
+
+function toggleFullscreen() {
+    const d = document as any;
+    if(document.fullscreenElement || d.webkitFullscreenElement) {
+        (document.exitFullscreen || d.webkitExitFullscreen).call(document);
+    } else {
+        const el = document.documentElement as any;
+        (el.requestFullscreen || el.webkitRequestFullscreen).call(el, { navigationUI: "hide" })?.catch?.(() => { /* bỏ qua */ });
+    }
+}
+
+function useFullscreen() {
+    const [fs, setFs] = useState(!!document.fullscreenElement);
+    useEffect(() => {
+        const on = () => setFs(!!(document.fullscreenElement || (document as any).webkitFullscreenElement));
+        document.addEventListener("fullscreenchange", on);
+        document.addEventListener("webkitfullscreenchange", on);
+        return () => { document.removeEventListener("fullscreenchange", on); document.removeEventListener("webkitfullscreenchange", on); };
+    }, []);
+    return fs;
+}
+
 function newEditor() {
     const name = prompt("Tên tệp mới trong ~/LTHT (vd. Lab1/bai1.c hoặc Lab2/bai1.s):", "Lab1/bai1.c");
     if(name) openEditor(HOME + "/LTHT/" + name.replace(/^\/+/, ""));
@@ -47,6 +76,7 @@ export function Desktop() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [saved, setSaved] = useState<number | null>(null);
     const top = wm.topId();
+    const fullscreen = useFullscreen();
 
     useEffect(() => { document.documentElement.dataset.skin = prefs.skin; }, [prefs.skin]);
     useEffect(() => {
@@ -72,6 +102,15 @@ export function Desktop() {
     return (
         <div className="desktop">
             <div className="wallpaper" />
+            <div className="wallpaper-mark" aria-hidden>
+                <IconPenguin size={150} />
+                <span className="wm-title">TuxLab</span>
+                <span className="wm-sub">Debian GNU/Linux · i386 · in your browser</span>
+            </div>
+            <a className="watermark" href="https://github.com/h2n07" target="_blank" rel="noreferrer" title="github.com/h2n07">
+                <GitHubMark size={18} />
+                <span><b>h2n07</b><small>github.com/h2n07</small></span>
+            </a>
             <div className="desktop-icons">
                 <button className="dicon" onDoubleClick={openTerminal} onClick={e => e.detail === 1 && (e.currentTarget as HTMLElement).focus()}>
                     <IconTerminal size={44} /><span>Terminal</span>
@@ -110,7 +149,7 @@ export function Desktop() {
             {menuOpen && (
                 <div className="startmenu" onPointerDown={e => e.stopPropagation()}>
                     <div className="sm-head"><SkinLogo skin={prefs.skin} size={30} />
-                        <div><b>LTHT Linux Lab</b><div className="muted small">Debian 12 i386 · {skinName}</div></div></div>
+                        <div><b>TuxLab</b><div className="muted small">Debian 12 i386 · {skinName}</div></div></div>
                     {[
                         { icon: ICONS.terminal(22), label: "Terminal", run: openTerminal },
                         { icon: ICONS.files(22), label: "Tệp", run: () => openFiles() },
@@ -120,6 +159,7 @@ export function Desktop() {
                         { icon: ICONS.settings(22), label: "Cài đặt, xuất/nhập .zip, đặt lại máy", run: () => wm.open("settings", {}, "Cài đặt") },
                         { icon: ICONS.log(22), label: "Nhật ký khởi động", run: () => wm.open("log", {}, "Nhật ký khởi động (ttyS0)") },
                         { icon: ICONS.about(22), label: "Hướng dẫn và thông tin", run: () => wm.open("about", {}, "Hướng dẫn và thông tin") },
+                        { icon: <span className="fs-ico">⛶</span>, label: fullscreen ? "Thoát toàn màn hình" : "Toàn màn hình", run: toggleFullscreen },
                     ].map((it, i) => (
                         <button key={i} onClick={() => { setMenuOpen(false); it.run(); }}>{it.icon}<span>{it.label}</span></button>
                     ))}
@@ -154,6 +194,14 @@ export function Desktop() {
                             {machine.persist?.lastError ? "⚠ Lỗi lưu" : saved ? "✓ Đã lưu" : "Đang lưu"}
                         </span>
                     )}
+                    <button className="fsbtn" onClick={toggleFullscreen} title={fullscreen ? "Thoát toàn màn hình (Esc)" : "Toàn màn hình"}
+                            aria-label="Toàn màn hình">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                            {fullscreen
+                                ? <path d="M7 2v5H2M11 2v5h5M7 16v-5H2M11 16v-5h5" />
+                                : <path d="M2 7V2h5M16 7V2h-5M2 11v5h5M16 11v5h-5" />}
+                        </svg>
+                    </button>
                     <span className="clock">{now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}<br />
                         <small>{now.toLocaleDateString("vi-VN")}</small></span>
                 </div>

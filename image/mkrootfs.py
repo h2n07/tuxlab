@@ -669,7 +669,7 @@ def main():
     tree.add_file("var/lib/dpkg/status", b"")
     tree.add_file("var/lib/dpkg/available", b"")
     tree.add_file("etc/fstab", b"# UNCONFIGURED FSTAB FOR BASE SYSTEM\n")
-    tree.add_file("etc/hostname", b"ltht\n")
+    tree.add_file("etc/hostname", b"tuxlab\n")
     tree.add_file("etc/resolv.conf", b"nameserver 192.168.86.1\n")
 
     # --- /debootstrap: những gì --foreign để lại cho --second-stage ---

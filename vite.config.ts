@@ -59,9 +59,9 @@ export default defineConfig({
             registerType: "autoUpdate",
             injectRegister: null,
             manifest: {
-                name: "LTHT Linux Lab",
-                short_name: "LTHT Linux",
-                description: "Debian 12 i386 thật chạy trong trình duyệt (v86) cho môn Lập trình hệ thống",
+                name: "TuxLab",
+                short_name: "TuxLab",
+                description: "A real Debian 12 i386 Linux desktop in your browser (v86/WebAssembly)",
                 lang: "vi",
                 theme_color: "#2c001e",
                 background_color: "#1e1e1e",

@@ -1,156 +1,146 @@
-# LTHT Linux Lab — Debian i386 thật trong trình duyệt
+# TuxLab — a real Linux desktop in your browser
 
-Website tĩnh mô phỏng một máy Linux có giao diện cửa sổ cho môn **Lập trình hệ thống**.
-Bên dưới là **Debian GNU/Linux 12 (bookworm) i386 thật** chạy trong trình duyệt bằng
-trình giả lập x86 [v86](https://github.com/copy/v86) (WebAssembly). Không có trình
-giả lập lệnh/hợp dịch/liên kết viết bằng JavaScript: `as`, `ld`, `gcc`, `g++`, `make`,
-`gdb`, `objdump`, `strace`, `vim`... đều là bản Debian thật, nên kết quả, thông báo lỗi
-và mã thoát giống hệt một máy Debian i386.
+**▶ Try it: https://h2n07.github.io/tuxlab/** · [Tiếng Việt](README.vi.md)
 
-> Các skin “Ubuntu / Kali / Fedora” chỉ là màu sắc và biểu tượng tự vẽ. Hệ điều hành
-> bên dưới luôn là **Debian 12 i386**. Dự án không liên quan tới Debian, Canonical,
-> Offensive Security hay Red Hat.
+TuxLab is a static website that boots a **real Debian GNU/Linux 12 (bookworm) i386** system
+inside your browser using the [v86](https://github.com/copy/v86) x86 emulator (WebAssembly),
+and wraps it in a small windowed desktop with a terminal, a file manager and a code editor.
 
-## Tính năng
+You don't install anything, and there is no backend server or account. Everything runs on
+your machine and stays there.
 
-- **Desktop**: thanh tác vụ, menu ứng dụng, biểu tượng desktop, nhiều cửa sổ cùng lúc
-  (kéo, thu nhỏ, phóng to, đổi kích thước, đóng).
-- **Terminal** (xterm.js ↔ `virtio-console` `/dev/hvc0`, `agetty --autologin student`):
-  Ctrl+C / Ctrl+D / Ctrl+Z, lịch sử ↑↓, Tab, UTF‑8 tiếng Việt, Ctrl+Shift+C/V,
-  đổi cỡ chữ. Khi đổi kích thước cửa sổ, kích thước được gửi vào kernel qua virtio-console
-  resize, nên `stty size` và `$COLUMNS` luôn đúng.
-- **Tệp**: duyệt cây thư mục thật của guest. GUI đọc/ghi trực tiếp hệ tệp 9p trong JS,
-  guest gắn 9p với `cache=none`, nên đồng bộ hai chiều tức thì. Có tạo, đổi tên, xoá,
-  di chuyển, kéo-thả (kể cả từ máy thật vào để tải lên), tải xuống tệp hoặc thư mục (.zip),
-  `chmod +x`, mở terminal tại thư mục.
-- **Trình soạn thảo** CodeMirror 6: tô màu C/C++ và assembly GNU as (AT&T), Ctrl+S lưu
-  vào guest, tự nạp lại khi tệp bị đổi từ terminal.
-- **▶ Biên dịch & chạy** (F5): mở terminal rồi *gõ* lệnh tương ứng để sinh viên thấy rõ.
-  Ví dụ `cd ~/LTHT/Lab2 && as -o example.o example.s && ld -o example example.o && ./example`.
-- **Lưu trạng thái** vào IndexedDB, **xuất/nhập .zip**, **đặt lại máy** (có xác nhận).
-- **Offline** sau lần tải đầu (service worker / Workbox). Có nút “Tải toàn bộ ảnh để dùng offline”.
-- Thư mục mẫu `~/LTHT/Lab1` (Lab1-template.cpp, bits.c) và `~/LTHT/Lab2` (example.s Hello World, echo.s, reverse.s).
+Nothing is simulated in JavaScript. `bash`, `gcc`, `g++`, `as`, `ld`, `make`, `gdb`, `objdump`,
+`strace`, `vim` and the rest are the real Debian i386 binaries, so the output, error messages
+and exit codes are exactly what you'd get on a physical 32-bit Debian box.
 
-## Kiến trúc
+It works well for:
+- learning **systems programming**: C/C++, bit manipulation, 32-bit x86 assembly (AT&T or NASM),
+  Linux syscalls via `int $0x80`, ELF, linking, debugging;
+- teaching labs and workshops where students can't, or shouldn't, install a VM;
+- a disposable Linux shell to practise the command line, on any laptop, offline.
+
+> The Ubuntu / Kali / Fedora “skins” only change colours and icons. The OS underneath is always
+> Debian 12 i386. This project is not affiliated with Debian, Canonical, OffSec or Red Hat.
+
+## Features
+
+| | |
+|---|---|
+| **Desktop** | Taskbar, app menu, desktop icons, multiple draggable/resizable windows, fullscreen mode, 3 colour skins |
+| **Terminal** | xterm.js ↔ `virtio-console` (`/dev/hvc0`, auto-login as `student`). Ctrl+C/D/Z, history, Tab completion, UTF-8 input (incl. Vietnamese IME), copy/paste, font zoom, correct window size (`stty size`) |
+| **Files** | Browses the guest's real file system and syncs both ways instantly: the UI talks to the same 9p inode tree the kernel mounts with `cache=none`. Create, rename, delete, move, drag & drop, upload from your computer (files or folders), download a file or a folder as `.zip`, `chmod +x` |
+| **Editor** | CodeMirror 6 with C/C++ and GNU as (AT&T) highlighting, Ctrl+S saves into the guest, reloads when the file changes from the terminal |
+| **▶ Build & run** | F5 opens the terminal and *types* the real command (`gcc x.c -o x && ./x`, `as … && ld … && ./x`, `nasm -f elf32 …`, `make`), so learners see exactly what runs |
+| **Persistence** | Disk changes are saved to IndexedDB every 3 s; reloading or closing the tab keeps your files. Export/import `.zip`, factory reset |
+| **Fast start** | After the first boot, a machine snapshot is stored locally: the next start restores in ~0.5 s |
+| **Offline** | Service worker (Workbox); optional “download the whole image for offline use” |
+| **Optional network** | Off by default. Point it at your own v86 relay (wsproxy / wisp) to use `apt` |
+
+Bundled tools: binutils, gcc/g++ 12, make, build-essential, gdb 13, strace, ltrace, nasm, vim, nano,
+less, man pages, bash-completion, file, tree, xxd, zip/unzip, sudo (passwordless for `student`).
+Sample exercises are in `~/LTHT/Lab1` (C/C++ bit manipulation) and `~/LTHT/Lab2` (assembly
+Hello World, `sys_read`/`sys_write` echo, string reverse). Change them in [`samples/`](samples/).
+
+## How it works
 
 ```
-Trình duyệt
-├─ React + TypeScript (Vite)       desktop, cửa sổ, Terminal, Tệp, Soạn thảo, Cài đặt
-├─ v86 0.5.472 (WASM)              CPU x86 32-bit, virtio-9p, virtio-console, ttyS0
-│   └─ Debian 12 i386, kernel 6.1 (linux-image-686)
-│       ├─ /  = 9p "host9p" (cache=none) ← tệp tải theo nhu cầu từ image/base/*.bin.zst
-│       ├─ /dev/hvc0  ↔ xterm.js (terminal của sinh viên)
-│       └─ /dev/ttyS0 ↔ tác tử điều khiển ltht-agent (đồng bộ giờ, sync) + log kernel
-└─ IndexedDB                       ảnh chụp máy (snapshot) + chênh lệch đĩa của người dùng
+Browser
+├─ React + TypeScript (Vite)       desktop, windows, Terminal, Files, Editor, Settings
+├─ v86 0.5.472 (WASM JIT)          32-bit x86 PC: virtio-9p, virtio-console, serial
+│   └─ Debian 12 i386, Linux 6.1 (linux-image-686)
+│       ├─ /  = 9p "host9p", cache=none ← files fetched on demand from image/base/*.bin.zst
+│       ├─ /dev/hvc0  ↔ xterm.js
+│       └─ /dev/ttyS0 ↔ tiny control agent (clock sync, sync) + kernel log
+└─ IndexedDB                       boot snapshot + per-path diff of your changes
 ```
 
-**Khởi động nhanh.** Lần đầu máy khởi động lạnh (tải kernel, `fs.json`, các tệp cần thiết).
-Khi tới dấu nhắc lệnh, web lưu `save_state()` của v86 (nén gzip) vào IndexedDB. Những lần
-sau chỉ cần giải nén rồi `restore_state()`.
+- **Lazy image.** The root file system is published in v86's 9p format (`fs.json` +
+  content-addressed, zstd-compressed files). Only the files that are actually used get
+  downloaded. The full image is ~563 MB uncompressed and ~174 MB compressed.
+- **Snapshot + diff persistence.** The snapshot is always the *clean* state right after boot.
+  Every 3 seconds TuxLab compares the live inode tree with that baseline and writes only the
+  differences (`files/<path>`, `deleted/<path>`) to IndexedDB. On start it restores the
+  snapshot, replays the diff and resumes. This also survives image updates, and it covers
+  packages installed with apt.
+- **v86 fixes.** While building the image I found two POSIX bugs in v86's 9p file system and
+  patched them at runtime ([`src/vm/v86-fixes.js`](src/vm/v86-fixes.js)):
+  1. an unlinked but still-open file returned `ENOENT` and lost its data, which crashed running
+     programs, e.g. dpkg upgrading itself;
+  2. symlinks created by the guest had `st_size = 0`, so dpkg reported "symbolic link size has
+     changed".
+  The resize message of v86's virtio-console arrives in Linux with rows and cols swapped, so the
+  UI compensates for that. Console input is also chunked, because v86 drops input when the guest
+  queue is full.
 
-**Lưu đĩa.** Ảnh chụp luôn là trạng thái *sạch* ngay sau khởi động. Mọi thay đổi của người
-dùng (từ terminal hay GUI) được quét mỗi 3 giây, so với trạng thái sạch theo đường dẫn, và chỉ
-phần khác biệt được ghi vào IndexedDB (`files/<path>`, `deleted/<path>`). Khi mở lại:
-khôi phục ảnh chụp, áp chênh lệch, chạy tiếp. Cách này vẫn hoạt động khi cài thêm gói bằng apt.
+## Building the Debian image
 
-**Vá v86.** Trong quá trình dựng ảnh mình phát hiện và vá hai lỗi ngữ nghĩa POSIX của
-hệ tệp 9p trong v86 0.5.472 (`src/vm/v86-fixes.js`, dùng cho cả bản web và script dựng):
-1. Tệp đã unlink nhưng còn mở thì bị trả `ENOENT` và mất dữ liệu ngay, khiến tiến trình
-   đang chạy bị segfault (ví dụ dpkg tự nâng cấp chính nó).
-2. Liên kết tượng trưng do guest tạo có `st_size = 0` (phải bằng độ dài đích), khiến dpkg
-   báo “symbolic link … size has changed”.
-
-Ngoài ra `virtio-console` của v86 bỏ dữ liệu khi guest chưa sẵn bộ đệm, nên bản web chia
-nhỏ và chờ trước khi gửi (dán đoạn văn bản dài không bị mất ký tự).
-
-## Dựng ảnh Debian (`image/build-image.sh`)
-
-Yêu cầu: **Python ≥ 3.9**, **Node.js ≥ 23.8** (cần zlib zstd), `npm install`. Chạy được trên
-Linux, macOS và Windows (Git Bash). **Không cần root, debootstrap, dpkg hay Docker** trên máy dựng.
+Requirements: **Python ≥ 3.9** and **Node.js ≥ 23.8** (needs built-in zstd). Runs on Linux, macOS
+and Windows (Git Bash). **No root, no Docker, no debootstrap/dpkg on the host.**
 
 ```bash
 npm install
-bash image/build-image.sh --test
+bash image/build-image.sh --test     # ~30 min, output in .build/image
 ```
 
-Các bước:
+1. [`image/mkrootfs.py`](image/mkrootfs.py) does the equivalent of
+   `debootstrap --foreign --variant=minbase --arch=i386 bookworm`: it verifies `Release` →
+   `Packages.xz` → every `.deb` by SHA256, unpacks the `Priority: required` set with merged `/usr`,
+   installs Debian's own `debootstrap` scripts into `/debootstrap`, prepares a local apt repo for
+   [`image/packages.txt`](image/packages.txt), extracts the Debian kernel, and builds a tiny
+   busybox initrd that mounts the 9p root.
+2. [`image/run-stage2.mjs`](image/run-stage2.mjs) boots that tree in v86 under Node and runs
+   [`image/stage2.sh`](image/stage2.sh) as PID 1. That script runs the real
+   `debootstrap --second-stage`, then `apt-get install --no-install-recommends …`, creates the
+   `student` user and applies [`image/overlay/`](image/overlay) and [`samples/`](samples). The
+   result is exported as `fs.json` + `base/*.bin.zst` + kernel + initrd.
+3. [`image/test-image.mjs`](image/test-image.mjs) is the automated acceptance test (below).
 
-1. `image/mkrootfs.py`: tương đương `debootstrap --foreign --variant=minbase --arch=i386 bookworm`.
-   Tải `Release` → `Packages.xz` (kiểm SHA256) → các `.deb` (kiểm SHA256), giải nén các gói
-   `Priority: required` kèm merge `/usr` như debootstrap, ghi `/debootstrap/*` từ chính gói
-   `debootstrap` của Debian, lập kho apt cục bộ cho các gói ở `image/packages.txt`. Lấy kernel
-   `linux-image-686` và tạo initrd nhỏ (busybox-static + module virtio/9p). Kết quả xuất ra
-   định dạng 9p của v86 (`fs.json` v3 + tệp đặt tên theo sha256).
-2. `image/run-stage2.mjs`: khởi động kết quả đó trong v86 (Node.js) và chạy `image/stage2.sh`
-   làm PID 1: `debootstrap --second-stage`, `apt-get install --no-install-recommends` các gói,
-   tạo người dùng `student` (sudo không mật khẩu), chép `image/overlay/` và bài mẫu `samples/`,
-   dọn tài liệu thừa. Sau đó xuất hệ tệp thành `.build/image/{fs.json, base/*.bin.zst, bzImage,
-   initrd.img, manifest.json}`.
-3. `image/test-image.mjs`: kiểm thử nghiệm thu (xem bảng bên dưới).
-
-Muốn dựng lại y hệt một thời điểm, dùng snapshot.debian.org:
+For a quick change to config files or sample exercises, run `node image/apply-overlay.mjs`. It
+patches the built image in seconds instead of rebuilding it. For a bit-for-bit reproducible
+build, pin the archive with
 `LTHT_MIRROR=https://snapshot.debian.org/archive/debian/20261001T000000Z bash image/build-image.sh`.
-Danh sách phiên bản gói đã cài nằm ở `/usr/local/share/ltht/installed-packages.txt` trong máy ảo.
 
-Gói cài thêm (`image/packages.txt`): binutils, gcc, g++, make, build-essential, gdb, strace,
-ltrace, nasm, vim, nano, less, man-db, manpages(-dev), bash-completion, file, tree, xxd,
-procps, psmisc, zip, unzip, sudo, kmod, sysvinit-core, udhcpc, iproute2, ca-certificates.
-
-## Chạy và triển khai
+## Running and deploying
 
 ```bash
-npm run dev        # http://localhost:5173 (ảnh lấy từ .build/image)
-npm run build      # dist/ (đã chép ảnh vào dist/image)
+npm run dev       # http://localhost:5173 (serves .build/image)
+npm run build     # static site in dist/, image copied to dist/image
 npm run preview
 ```
 
-`dist/` là site tĩnh, host ở đâu cũng được:
+`dist/` is a plain static site:
+- **GitHub Pages**: push `dist/` to a `gh-pages` branch. The live demo is hosted this way
+  (~205 MB, ~14k files).
+- **Cloudflare Pages / Netlify / S3**: also fine. If the host limits the number or size of files,
+  host `image/` elsewhere (with CORS) and build with
+  `VITE_IMAGE_URL=https://cdn.example.com/image/ npm run build`.
 
-- **GitHub Pages**: đẩy `dist/` lên nhánh `gh-pages` (giới hạn 1 GB/site, 100 MB/tệp; ảnh khoảng 300 MB).
-- **Cloudflare Pages**: giới hạn 20 000 tệp và 25 MiB/tệp. Nếu ảnh vượt số tệp, host thư mục
-  ảnh ở nơi khác (R2, S3...) và dựng web với `VITE_IMAGE_URL=https://.../image/ npm run build`
-  (máy chủ ảnh cần bật CORS).
+## Acceptance results
 
-Mạng trong máy ảo **tắt mặc định** (không gửi dữ liệu ra ngoài). Khi đó `apt` in thêm
-dòng hướng dẫn và lỗi thật của apt. Muốn cài gói, chạy một proxy mạng của v86 (wsproxy/wisp),
-nhập URL trong Cài đặt, khởi động lại, rồi chạy `sudo ltht-net`.
+Measured 2026-10-20 on an AMD Ryzen 7 5800H laptop, Windows 11. Node: `node image/test-image.mjs`
+→ **14/14 passed**. Browser: production build in Chromium.
 
-## Kết quả nghiệm thu
+| Check | Result | Measurement |
+|---|---|---|
+| `as --version`, `ld --version` | ✅ | GNU Binutils for Debian 2.40 |
+| Hello World asm: `as -o example.o example.s && ld -o example example.o && ./example` | ✅ | prints `Hello, World`, exit 0; as ≈ 0.3 s, ld ≈ 0.5 s |
+| Read from keyboard with `sys_read` (3), echo with `sys_write` (4); string reverse | ✅ | input typed into the terminal is echoed; `Lap trinh he thong` → `gnoht eh hnirt paL` |
+| C++ template with `g++` prints `Pass.`/`Failed.` and `Your score` | ✅ | g++ with `<iostream>`: **18–27 s** per compile |
+| Folder made in the GUI shows up in `ls`, and vice versa | ✅ | instant (same inode tree) |
+| `gdb ./example` (breakpoint, registers, `x/s`), `objdump -d` | ✅ | gdb ≈ 10–13 s including startup |
+| Close/reload the browser: files are still there | ✅ | files from the terminal and folders from the GUI survive a reload |
+| Start time with cache < 5 s | ✅ | machine restore **0.48 s**, ≈ **2.4 s** from page load. Cold first boot: 15–20 s (Node), 21–28 s (browser) |
+| Compile a small C file | — | `gcc bits.c -o bits` ≈ **4 s** |
+| Extra: `stty size`, Ctrl+C, Ctrl+Z/`jobs`, Tab completion, UTF-8, real gcc errors, sudo, apt-offline message | ✅ | |
 
-Đo ngày 20/10/2026 trên laptop AMD Ryzen 7 5800H, Windows 11. Bản Node chạy bằng
-`node image/test-image.mjs` (14/14 đạt, chi tiết trong `.build/image/test-results.json`).
-Bản trình duyệt chạy `vite preview` bản production trên Chromium.
+About C++ compile speed: `cc1plus` has to parse about 30k lines of `<iostream>` headers on an
+emulated CPU. Use `gcc` for C exercises (≈ 5× faster), use `<cstdio>` instead of `<iostream>`, or
+give the class a precompiled header.
 
-| # | Tiêu chí | Kết quả | Số liệu đo |
-|---|----------|---------|------------|
-| 1 | `as --version`, `ld --version` | **Đạt** | GNU assembler / GNU ld (GNU Binutils for Debian) 2.40 |
-| 2 | Hello World: `as -o example.o example.s`, `ld -o example example.o`, `./example` | **Đạt** | in `Hello, World`, mã thoát 0; as ≈ 0,3 s, ld ≈ 0,5 s |
-| 3 | Đọc chuỗi từ bàn phím bằng sys_read(3), in lại bằng sys_write(4) | **Đạt** | `echo.s` nhận đúng chuỗi gõ từ terminal; `reverse.s`: `Lap trinh he thong` → `gnoht eh hnirt paL` |
-| 4 | Lab1-template.cpp với `g++`, in `Pass.`/`Failed.` và `Your score` | **Đạt** | g++ + `<iostream>`: **18–27 s** mỗi lần biên dịch; `Your score: 9/11` (bitCount là bài để sinh viên làm) |
-| 5 | Tạo thư mục bằng GUI → `ls` thấy ngay, và ngược lại | **Đạt** | tức thì (cùng một cây inode 9p, guest dùng `cache=none`) |
-| 6 | `gdb ./example`, `objdump -d example` | **Đạt** | gdb đặt breakpoint `_start`, `info registers`, `x/s` (≈ 10–13 s gồm cả khởi động gdb); objdump hiện `mov $0xd,%edx` |
-| 7 | Tắt/tải lại trình duyệt, tệp vẫn còn | **Đạt** | tệp tạo bằng terminal và thư mục tạo bằng GUI còn nguyên sau reload ("áp 4 thay đổi đã lưu") |
-| 8 | Khởi động khi đã có cache < 5 s | **Đạt** | khôi phục máy **0,48 s** (giải nén 0,28 s + restore 0,12 s); tính từ lúc bắt đầu tải trang ≈ **2,4 s**. Khởi động lạnh lần đầu: 15–20 s (Node), 27,7 s (trình duyệt, gồm lưu ảnh chụp) |
-| 8b | Thời gian biên dịch một tệp C đơn giản | — | `gcc bits.c -o bits`: **≈ 4 s** |
+## License
 
-Kiểm thử bổ sung (đều đạt): `stty size` đúng theo kích thước cửa sổ; Ctrl+C và Ctrl+Z/`jobs`;
-Tab hoàn thành lệnh; UTF-8 tiếng Việt; thông báo lỗi thật (`cc1: fatal error: khong-co.c: No such
-file or directory`, mã 1); `sudo` không mật khẩu; `apt` không có mạng thì báo rõ. Ảnh chụp máy
-512 MB RAM nén còn khoảng 12,5 MB.
-
-**Về tốc độ g++.** Biên dịch C++ có `<iostream>` mất 18–27 s vì `cc1plus` phải phân tích khoảng
-30 000 dòng header trên CPU giả lập. Các cách giảm, đã đo hoặc gợi ý:
-- Dùng **gcc cho bài C** (≈ 4 s, nhanh khoảng 5 lần). Lab 1 chỉ cần `<stdio.h>`/`printf`.
-- Thay `<iostream>` bằng `<cstdio>` trong template nếu được phép.
-- Biên dịch lại lần hai không nhanh hơn: header vẫn phải phân tích lại. Có thể dùng precompiled
-  header (`g++ -x c++-header`) nếu giảng viên cố định một header chung.
-
-## Giấy phép
-
-- Mã nguồn dự án: MIT.
-- v86: BSD-2-Clause. SeaBIOS: LGPLv3. VGABIOS: LGPLv2.1 (`public/v86/`).
-- Debian: mỗi gói theo giấy phép riêng (`/usr/share/doc/*/copyright` được giữ trong ảnh).
-  Kernel Linux: GPLv2. Theo các giấy phép GPL, mã nguồn tương ứng đúng phiên bản có tại
-  `https://snapshot.debian.org/` và `https://sources.debian.org/`. Danh sách phiên bản gói đã
-  dùng nằm trong ảnh.
-- xterm.js, CodeMirror, React, fflate, Workbox: MIT.
+TuxLab itself is MIT © h2n07 ([github.com/h2n07](https://github.com/h2n07)). Third-party
+components keep their own licenses: v86 (BSD-2-Clause); SeaBIOS (LGPL-3.0) and VGABIOS
+(LGPL-2.1) in `public/v86/`; Debian packages (each package's `/usr/share/doc/*/copyright` is kept
+in the image; Linux kernel GPL-2.0; corresponding sources are available on snapshot.debian.org /
+sources.debian.org); xterm.js, CodeMirror, React, fflate, Workbox (MIT).
