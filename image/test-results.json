@@ -1,0 +1,101 @@
+{
+ "image": "D:\\OneDrive\\Workspace\\LinuxSimu\\.build\\image",
+ "date": "2026-10-19T17:26:02.082Z",
+ "cold_boot_ms": 15503,
+ "total_ms": 66479,
+ "results": [
+  {
+   "id": "0",
+   "name": "Hệ thống: Debian 12 i386, người dùng student",
+   "pass": true,
+   "detail": "12.15 | i686 | student | C.UTF-8"
+  },
+  {
+   "id": "1",
+   "name": "as --version và ld --version",
+   "pass": true,
+   "detail": "GNU assembler (GNU Binutils for Debian) 2.40 / \u001b]0;student@ltht: ~\u0007student@ltht:~$ ld --version | head -n1; echo \"__E3__$?__\"\nGNU ld (GNU Binutils for Debian) 2.40"
+  },
+  {
+   "id": "2",
+   "name": "Hello World assembly (as, ld, ./example)",
+   "pass": true,
+   "detail": "as 223 ms, ld 286 ms, ./example -> \"Hello, World\" (mã thoát 0)",
+   "as_ms": 223,
+   "ld_ms": 286
+  },
+  {
+   "id": "3",
+   "name": "sys_read từ bàn phím rồi sys_write (echo.s, reverse.s)",
+   "pass": true,
+   "detail": "echo: đúng; reverse -> \"gnoht eh hnirt paL\""
+  },
+  {
+   "id": "4",
+   "name": "Lab1-template.cpp với g++",
+   "pass": false,
+   "detail": "g++ 18.0 s; ",
+   "gpp_ms": 17958
+  },
+  {
+   "id": "5",
+   "name": "Đồng bộ hai chiều GUI <-> terminal",
+   "pass": true,
+   "detail": "ls thấy tao-tu-GUI: true; GUI đọc a.txt: \"noi dung\\n\""
+  },
+  {
+   "id": "6",
+   "name": "gdb ./example và objdump -d example",
+   "pass": true,
+   "detail": "gdb 10.3 s; objdump: mov    $0xd,%edx",
+   "gdb_ms": 10270
+  },
+  {
+   "id": "8b",
+   "name": "Thời gian biên dịch C đơn giản (gcc)",
+   "pass": true,
+   "detail": "gcc bits.c: lần 1 4.0 s, lần 2 3.9 s",
+   "gcc_first_ms": 3980,
+   "gcc_ms": 3928
+  },
+  {
+   "id": "T1",
+   "name": "Kích thước terminal (stty size) theo cửa sổ",
+   "pass": true,
+   "detail": "stty size -> 30 100"
+  },
+  {
+   "id": "T2",
+   "name": "Ctrl+C ngắt chương trình, Ctrl+Z tạm dừng",
+   "pass": true,
+   "detail": "Ctrl+C ok; jobs: [1]+  Stopped                 sleep 200"
+  },
+  {
+   "id": "T3",
+   "name": "Hoàn thành bằng Tab, UTF-8 tiếng Việt",
+   "pass": true,
+   "detail": "ech<Tab> -> echo; in đúng chữ có dấu"
+  },
+  {
+   "id": "T4",
+   "name": "Thông báo lỗi và mã thoát như Linux thật",
+   "pass": true,
+   "detail": "cc1: fatal error: khong-co.c: No such file or directory (mã 1); sudo không mật khẩu: true"
+  },
+  {
+   "id": "T5",
+   "name": "apt khi không có mạng báo lỗi rõ ràng",
+   "pass": true,
+   "detail": "LTHT: Máy ảo CHƯA có mạng nên apt không tải được gói. |       Bật mạng trong menu Hệ thống > Mạng của giao diện web, rồi chạy: sudo ltht-net"
+  },
+  {
+   "id": "S",
+   "name": "Kích thước và thời gian khôi phục ảnh chụp",
+   "pass": true,
+   "detail": "state 48 MB -> gzip 12.5 MB (lưu 112 ms + nén 722 ms); giải nén + khôi phục + lệnh đầu tiên 196 ms (Node)",
+   "state_mb": 47.502356,
+   "gzip_mb": 12.47591,
+   "restore_ms": 196
+  }
+ ]
+}
