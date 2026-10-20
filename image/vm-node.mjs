@@ -47,7 +47,7 @@ export function createVM(o) {
         uart1: false,
     };
     if(o.virtioConsole) opts.virtio_console = true;
-    if(o.network) opts.net_device = { type: "virtio", relay_url: "fetch" };
+    if(o.network) opts.net_device = { type: "virtio", relay_url: o.network === true ? "fetch" : o.network };
     const emulator = new V86(opts);
     // fs9p chỉ có sau khi v86 khởi tạo xong: vá rồi mới chạy CPU.
     emulator.add_listener("emulator-loaded", () => {

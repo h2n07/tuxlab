@@ -19,9 +19,12 @@ export interface MachineSettings {
     networkRelay: string;
 }
 
+/** Relay mạng công cộng do dự án v86 cung cấp (wsproxy: chuyển nguyên khung Ethernet, có DHCP/DNS). */
+export const PUBLIC_RELAY = "wss://relay.widgetry.org/";
+
 export const DEFAULT_SETTINGS: MachineSettings = {
     memoryMB: 512,
-    networkRelay: "",
+    networkRelay: PUBLIC_RELAY,
 };
 
 export interface ImageManifest {

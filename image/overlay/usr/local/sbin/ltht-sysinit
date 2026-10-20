@@ -18,5 +18,9 @@ hostname -F /etc/hostname
 chgrp dialout /dev/ttyS0 && chmod 620 /dev/ttyS0
 ip link set lo up 2>/dev/null
 modprobe -q virtio_net 2>/dev/null
+# Có card mạng (web bật mạng) thì tự xin IP qua DHCP ở nền.
+if ip link show eth0 >/dev/null 2>&1; then
+    /usr/local/sbin/ltht-net >/dev/null 2>&1 &
+fi
 dmesg -n 1
 exit 0

@@ -96,7 +96,8 @@ Danh sách phiên bản gói đã cài nằm ở `/usr/local/share/ltht/installe
 
 Gói cài thêm (`image/packages.txt`): binutils, gcc, g++, make, build-essential, gdb, strace,
 ltrace, nasm, vim, nano, less, man-db, manpages(-dev), bash-completion, file, tree, xxd,
-procps, psmisc, zip, unzip, sudo, kmod, sysvinit-core, udhcpc, iproute2, ca-certificates.
+procps, psmisc, zip, unzip, curl, wget, w3m, lynx, nmap, netcat-openbsd, tcpdump, dnsutils,
+iputils-ping, traceroute, sudo, kmod, sysvinit-core, udhcpc, iproute2, ca-certificates.
 
 ## Chạy và triển khai
 
@@ -113,9 +114,13 @@ npm run preview
   ảnh ở nơi khác (R2, S3...) và dựng web với `VITE_IMAGE_URL=https://.../image/ npm run build`
   (máy chủ ảnh cần bật CORS).
 
-Mạng trong máy ảo **tắt mặc định** (không gửi dữ liệu ra ngoài). Khi đó `apt` in thêm
-dòng hướng dẫn và lỗi thật của apt. Muốn cài gói, chạy một proxy mạng của v86 (wsproxy/wisp),
-nhập URL trong Cài đặt, khởi động lại, rồi chạy `sudo ltht-net`.
+**Mạng mặc định bật** qua relay công cộng của dự án v86 (`wss://relay.widgetry.org/`). Máy tự lấy IP
+khi khởi động và sau mỗi lần khôi phục ảnh chụp; nếu mất mạng thì chạy `sudo ltht-net`. Khi bật,
+**mọi lưu lượng mạng của máy ảo đi qua relay đó** (bên thứ ba), nhưng tệp của bạn không bị gửi đi
+trừ khi bạn tự gửi. Relay miễn phí, dùng chung nên chậm. Có thể tắt mạng hoặc dùng relay riêng
+(wsproxy/wisp) trong **Cài đặt → Mạng**. Khi tắt mạng, `apt` in thêm dòng hướng dẫn kèm lỗi thật của apt.
+Công cụ mạng có sẵn: curl, wget, nmap, netcat, tcpdump, dig, ping, traceroute, trình duyệt dạng chữ
+w3m và lynx. **Chỉ quét (nmap) những máy bạn được phép.**
 
 ## Kết quả nghiệm thu
 
@@ -134,6 +139,8 @@ Bản trình duyệt chạy `vite preview` bản production trên Chromium.
 | 7 | Tắt/tải lại trình duyệt, tệp vẫn còn | **Đạt** | tệp tạo bằng terminal và thư mục tạo bằng GUI còn nguyên sau reload ("áp 4 thay đổi đã lưu") |
 | 8 | Khởi động khi đã có cache < 5 s | **Đạt** | khôi phục máy **0,48 s** (giải nén 0,28 s + restore 0,12 s); tính từ lúc bắt đầu tải trang ≈ **2,4 s**. Khởi động lạnh lần đầu: 15–20 s (Node), 27,7 s (trình duyệt, gồm lưu ảnh chụp) |
 | 8b | Thời gian biên dịch một tệp C đơn giản | — | `gcc bits.c -o bits`: **≈ 4 s** |
+
+Mạng qua relay công cộng (đạt): tự nhận IP, `curl https://deb.debian.org` trả 200 sau 3,4 s, `w3m` đọc được trang web, vẫn có mạng sau khi khôi phục ảnh chụp.
 
 Kiểm thử bổ sung (đều đạt): `stty size` đúng theo kích thước cửa sổ; Ctrl+C và Ctrl+Z/`jobs`;
 Tab hoàn thành lệnh; UTF-8 tiếng Việt; thông báo lỗi thật (`cc1: fatal error: khong-co.c: No such

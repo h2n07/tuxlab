@@ -11,7 +11,10 @@ const IMG = process.env.LTHT_IMAGE_DIR || path.join(WORK, "image");
 const results = [];
 const t0 = Date.now();
 
-const emulator = createVM({ fsDir: IMG, kernelDir: IMG, memoryMB: 512, virtioConsole: true, cmdline: BASE_CMDLINE + " quiet loglevel=3" });
+// LTHT_TEST_RELAY=wss://relay.widgetry.org/ để kiểm tra thêm mạng (giống mặc định của bản web).
+const RELAY = process.env.LTHT_TEST_RELAY || "";
+const emulator = createVM({ fsDir: IMG, kernelDir: IMG, memoryMB: 512, virtioConsole: true, network: RELAY || undefined,
+                            cmdline: BASE_CMDLINE + " quiet loglevel=3" });
 const serial = serialWatcher(emulator, { echo: false });
 const write = createConsoleWriter(emulator, 0);
 
@@ -43,7 +46,7 @@ async function sh(cmd, ms) {
     const m = await waitOut(new RegExp(`__E${n}__(\\d+)__`), from, ms);
     // bỏ dòng lệnh vọng lại (echo) và dấu nhắc
     let text = out.slice(from);
-    const echoEnd = text.indexOf(`__E${n}__$?__"`);
+    const echoEnd = text.lastIndexOf(`__E${n}__$?__"`);   // có thể vọng 2 lần khi gõ trước dấu nhắc
     const nl = text.indexOf("\n", echoEnd);
     text = text.slice(nl + 1, text.lastIndexOf(`__E${n}__`));
     return { output: text.replace(/\r/g, "").replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, "").trim(), rc: +m[1], ms: Date.now() - start };
@@ -193,9 +196,18 @@ await test("T4", "Thông báo lỗi và mã thoát như Linux thật", async () 
         `${r.output.split("\n")[0]} (mã ${r.rc}); sudo không mật khẩu: ${/SUDO_OK/.test(s.output)}`);
 });
 
-await test("T5", "apt khi không có mạng báo lỗi rõ ràng", async () => {
+if(!RELAY) await test("T5", "apt khi không có mạng báo lỗi rõ ràng", async () => {
     const r = await sh("sudo apt-get update 2>&1 | head -n 8", 120000);
     record("T5", "apt khi không có mạng báo lỗi rõ ràng", /CHƯA có mạng/.test(r.output), r.output.split("\n").slice(0, 2).join(" | "));
+});
+
+if(RELAY) await test("N", "Mạng qua relay: DHCP, DNS, HTTPS, công cụ mạng", async () => {
+    let route = "";
+    for(let i = 0; i < 20 && !/default/.test(route); i++) { route = (await sh("ip route")).output; if(!/default/.test(route)) await sleep(3000); }
+    const c = await sh("curl -sS -o /dev/null -w '%{http_code}' --max-time 60 https://deb.debian.org/debian/", 120000);
+    const w = await sh("which w3m lynx nmap nc tcpdump dig ping traceroute | wc -l");
+    record("N", "Mạng qua relay: DHCP, DNS, HTTPS, công cụ mạng", /default/.test(route) && /^(200|301|302)$/.test(c.output) && w.output.trim() === "8",
+        `route: ${route.split(String.fromCharCode(10))[0]}; curl https://deb.debian.org -> ${c.output} (${(c.ms / 1000).toFixed(1)} s); công cụ có sẵn: ${w.output}/8`);
 });
 
 // ---- ảnh chụp (snapshot) ----

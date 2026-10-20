@@ -6,8 +6,8 @@ TuxLab is a static website that boots a **real Debian GNU/Linux 12 (bookworm) i3
 inside your browser using the [v86](https://github.com/copy/v86) x86 emulator (WebAssembly),
 and wraps it in a small windowed desktop with a terminal, a file manager and a code editor.
 
-You don't install anything, and there is no backend server or account. Everything runs on
-your machine and stays there.
+You don't install anything, and there is no backend server or account. The OS, your files and
+your work stay on your machine (see *Network* below for what leaves it).
 
 Nothing is simulated in JavaScript. `bash`, `gcc`, `g++`, `as`, `ld`, `make`, `gdb`, `objdump`,
 `strace`, `vim` and the rest are the real Debian i386 binaries, so the output, error messages
@@ -34,10 +34,12 @@ It works well for:
 | **Persistence** | Disk changes are saved to IndexedDB every 3 s; reloading or closing the tab keeps your files. Export/import `.zip`, factory reset |
 | **Fast start** | After the first boot, a machine snapshot is stored locally: the next start restores in ~0.5 s |
 | **Offline** | Service worker (Workbox); optional “download the whole image for offline use” |
-| **Optional network** | Off by default. Point it at your own v86 relay (wsproxy / wisp) to use `apt` |
+| **Network** | On by default via the public v86 relay `wss://relay.widgetry.org/` (DHCP is automatic): `apt install`, `curl`, `w3m`, `nmap`… work. Switch it off or use your own relay in Settings |
 
 Bundled tools: binutils, gcc/g++ 12, make, build-essential, gdb 13, strace, ltrace, nasm, vim, nano,
-less, man pages, bash-completion, file, tree, xxd, zip/unzip, sudo (passwordless for `student`).
+less, man pages, bash-completion, file, tree, xxd, zip/unzip, sudo (passwordless for `student`),
+plus network tools: curl, wget, nmap, netcat-openbsd, tcpdump, dig, ping, traceroute and the text
+browsers w3m and lynx.
 Sample exercises are in `~/LTHT/Lab1` (C/C++ bit manipulation) and `~/LTHT/Lab2` (assembly
 Hello World, `sys_read`/`sys_write` echo, string reverse). Change them in [`samples/`](samples/).
 
@@ -56,7 +58,7 @@ Browser
 
 - **Lazy image.** The root file system is published in v86's 9p format (`fs.json` +
   content-addressed, zstd-compressed files). Only the files that are actually used get
-  downloaded. The full image is ~563 MB uncompressed and ~174 MB compressed.
+  downloaded. The full image is ~607 MB uncompressed and ~187 MB compressed.
 - **Snapshot + diff persistence.** The snapshot is always the *clean* state right after boot.
   Every 3 seconds TuxLab compares the live inode tree with that baseline and writes only the
   differences (`files/<path>`, `deleted/<path>`) to IndexedDB. On start it restores the
@@ -71,6 +73,23 @@ Browser
   The resize message of v86's virtio-console arrives in Linux with rows and cols swapped, so the
   UI compensates for that. Console input is also chunked, because v86 drops input when the guest
   queue is full.
+
+## Network
+
+The guest has a virtio NIC connected to the **public relay of the v86 project**
+(`wss://relay.widgetry.org/`, a wsproxy that forwards raw Ethernet frames and provides DHCP/DNS).
+`ltht-sysinit` requests an address at boot, and the web UI asks for a new lease after every
+snapshot restore. If the network drops, run `sudo ltht-net`.
+
+- **Privacy:** when the network is on, *all network traffic of the VM* goes through that relay
+  (a third party). Your files are never sent anywhere unless you send them yourself, e.g. with
+  `curl -T`. Switch the network off in **Settings → Network**, or run your own relay (wsproxy or
+  wisp) and enter its URL.
+- The public relay is free, shared and rate-limited: `apt update` can take minutes.
+- `nmap` works with wsproxy-type relays (SYN/UDP scans, ping). With wisp relays only `-sT -Pn` works.
+  **Only scan hosts you are allowed to scan**, e.g. your own machines or `scanme.nmap.org`.
+- GUI browsers are not included: an emulated CPU makes Firefox unusably slow. Use
+  `w3m https://example.com` or `lynx`.
 
 ## Building the Debian image
 
@@ -118,7 +137,7 @@ npm run preview
 ## Acceptance results
 
 Measured 2026-10-20 on an AMD Ryzen 7 5800H laptop, Windows 11. Node: `node image/test-image.mjs`
-→ **14/14 passed**. Browser: production build in Chromium.
+→ **14/14 passed** offline, and the network check passes with `LTHT_TEST_RELAY=wss://relay.widgetry.org/`. Browser: production build in Chromium.
 
 | Check | Result | Measurement |
 |---|---|---|
@@ -132,6 +151,7 @@ Measured 2026-10-20 on an AMD Ryzen 7 5800H laptop, Windows 11. Node: `node imag
 | Start time with cache < 5 s | ✅ | machine restore **0.48 s**, ≈ **2.4 s** from page load. Cold first boot: 15–20 s (Node), 21–28 s (browser) |
 | Compile a small C file | — | `gcc bits.c -o bits` ≈ **4 s** |
 | Extra: `stty size`, Ctrl+C, Ctrl+Z/`jobs`, Tab completion, UTF-8, real gcc errors, sudo, apt-offline message | ✅ | |
+| Network via public relay: DHCP, DNS, HTTPS with curl, network tools present | ✅ | auto DHCP lease, `curl https://deb.debian.org` → 200 in 3.4 s, `w3m` renders example.com; still works after a snapshot restore |
 
 About C++ compile speed: `cc1plus` has to parse about 30k lines of `<iostream>` headers on an
 emulated CPU. Use `gcc` for C exercises (≈ 5× faster), use `<cstdio>` instead of `<iostream>`, or

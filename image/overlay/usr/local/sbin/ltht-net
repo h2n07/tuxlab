@@ -5,4 +5,4 @@ if ! ip link show eth0 >/dev/null 2>&1; then
     exit 1
 fi
 ip link set eth0 up
-exec udhcpc -i eth0 -n -q -t 5
+exec udhcpc -i eth0 -n -q -t 8 -T 3

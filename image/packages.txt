@@ -29,6 +29,18 @@ psmisc
 zip
 unzip
 
+# Mạng, bảo mật cơ bản và trình duyệt dạng chữ
+curl
+wget
+w3m
+lynx
+nmap
+netcat-openbsd
+tcpdump
+dnsutils
+iputils-ping
+traceroute
+
 # Hệ thống
 sudo
 kmod

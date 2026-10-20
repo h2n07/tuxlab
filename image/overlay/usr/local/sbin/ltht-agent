@@ -4,6 +4,7 @@
 #   time <epoch>   đặt lại đồng hồ sau khi khôi phục ảnh chụp
 #   sync           ghi dữ liệu đang đệm
 #   drop           giải phóng page cache (trước khi chụp ảnh máy)
+#   net            xin lại IP qua DHCP (sau khi khôi phục ảnh chụp)
 #   ping <id>      trả lời "LTHT_PONG <id>"
 exec < /dev/ttyS0
 stty -echo -icrnl 2>/dev/null
@@ -12,6 +13,7 @@ while read -r cmd arg; do
         time) date -s "@$arg" >/dev/null 2>&1 ;;
         sync) sync ;;
         drop) sync; echo 3 > /proc/sys/vm/drop_caches ;;
+        net) /usr/local/sbin/ltht-net >/dev/null 2>&1 & ;;
         ping) printf 'LTHT_PONG %s\n' "$arg" > /dev/ttyS0 ;;
     esac
 done

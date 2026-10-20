@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { machine } from "../../vm/machine";
 import { HOME } from "../../vm/guestfs";
 import * as idb from "../../vm/idb";
-import { IMAGE_URL } from "../../vm/config";
+import { IMAGE_URL, PUBLIC_RELAY } from "../../vm/config";
 import { SKINS, prefsStore, usePrefs } from "../prefs";
 import { SkinLogo } from "../icons";
 import { downloadBlob, formatSize, importZip, pickFiles, zipFolder } from "../actions";
@@ -141,13 +141,19 @@ export function SettingsApp() {
                         {[256, 384, 512, 768, 1024].map(m => <option key={m} value={m}>{m} MB</option>)}
                     </select>
                 </label>
-                <label className="field col">Mạng (tuỳ chọn, mặc định tắt)
-                    <input type="text" placeholder="để trống = không có mạng; vd. wisps://proxy.cua-ban.vn/" value={relay}
+                <label className="field col">Mạng của máy ảo (relay v86)
+                    <input type="text" placeholder="để trống = không có mạng; vd. wss://relay.widgetry.org/ hoặc ws://localhost:8080/" value={relay}
                            onChange={e => setRelay(e.target.value)} />
                 </label>
-                <p className="muted small">Không có mạng thì <code>apt</code> sẽ báo lỗi. Muốn cài thêm gói, cần một proxy mạng v86
-                    (wsproxy/wisp) do bạn tự chạy. Khi bật, lưu lượng mạng của máy ảo đi qua proxy đó. Sau khi khởi động lại,
-                    chạy <code>sudo ltht-net</code> trong terminal để lấy địa chỉ IP.</p>
+                <div className="row-buttons">
+                    <button onClick={() => setRelay(PUBLIC_RELAY)} disabled={relay === PUBLIC_RELAY}>Relay công cộng (mặc định)</button>
+                    <button onClick={() => setRelay("")} disabled={!relay}>Tắt mạng</button>
+                </div>
+                <p className="muted small">Mặc định máy ảo có mạng qua relay công cộng của dự án v86 ({PUBLIC_RELAY}):
+                    miễn phí, dùng chung, chậm và có thể quá tải. Khi bật, <b>mọi lưu lượng mạng của máy ảo đi qua relay đó</b>
+                    (không gồm tệp của bạn, trừ khi bạn tự gửi lên mạng). Máy tự lấy IP khi khởi động; nếu mất mạng, chạy
+                    <code>sudo ltht-net</code>. Kiểm tra: <code>curl -I https://deb.debian.org</code>. Có thể tự chạy relay riêng
+                    (wsproxy/wisp) và nhập URL ở trên. Tắt mạng thì <code>apt</code> sẽ báo lỗi rõ ràng.</p>
                 <div className="row-buttons">
                     <button className="primary" disabled={!vmChanged} onClick={applyVm}>Áp dụng và khởi động lại</button>
                     <button onClick={async () => { await machine.saveNow(); await machine.dropSnapshots(); location.reload(); }}>

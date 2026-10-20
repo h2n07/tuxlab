@@ -121,6 +121,8 @@ export class Machine extends EventTarget {
                 mark("apply-changes");
                 await this.emulator.run();
                 this.sendAgent("time " + Math.floor(Date.now() / 1000));
+                // Kết nối WebSocket tới relay là mới: xin lại IP.
+                if(this.settings.networkRelay) this.sendAgent("net");
                 this.resize(...this.size);
                 // Terminal mới mở chưa có gì: nhờ bash vẽ lại dấu nhắc (Ctrl+L).
                 this.writeConsole("\x0c");
